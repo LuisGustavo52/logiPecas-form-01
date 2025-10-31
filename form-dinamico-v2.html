@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Levantamento de Requisitos - LogiPeças</title>
+    <style>
+        /* --- Configurações Globais (Dark Mode) --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #121a26;
+            color: #e0e0e0;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        /* --- Container Principal --- */
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #1e293b;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            padding: 2rem 3rem;
+            border: 1px solid #334155;
+            overflow: hidden; /* Garante que nada vaze */
+        }
+
+        h1 { color: #ffffff; text-align: center; margin-bottom: 10px; }
+        .description { text-align: center; color: #a0aec0; font-size: 1.1rem; margin-bottom: 2rem; }
+        
+        /* --- Barra de Progresso --- */
+        .progress-bar-container {
+            width: 100%;
+            background-color: #334155;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 2.5rem;
+        }
+        
+        .progress-bar-inner {
+            height: 10px;
+            width: 0%; 
+            background: linear-gradient(90deg, #38bdf8, #a78bfa);
+            transition: width 0.4s ease-in-out;
+            border-radius: 10px;
+        }
+
+        /* --- Estrutura do Formulário --- */
+        form { width: 100%; }
+
+        fieldset {
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        /* --- Lógica de exibição da Seção --- */
+        fieldset {
+            display: none; /* Oculta todas por padrão */
+        }
+        
+        fieldset.active {
+            display: block; /* Exibe apenas a ativa */
+        }
+
+        legend {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #38bdf8;
+            padding: 0 10px;
+            margin-left: 10px;
+        }
+
+        .form-group { margin-bottom: 1.5rem; }
+
+        /* --- Estilos de Inputs (Dark Mode) --- */
+        label.main-label { display: block; font-weight: 600; color: #cbd5e1; margin-bottom: 8px; }
+
+        input[type="text"],
+        input[type="email"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #475569;
+            background-color: #29364a;
+            color: #e0e0e0;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 3px rgba(56,189,248,0.2);
+            outline: none;
+        }
+        textarea { resize: vertical; min-height: 100px; }
+
+        /* --- Estilos de Opções (Radio / Checkbox) --- */
+        .option-group { display: flex; flex-direction: column; gap: 10px; }
+        .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            background-color: #29364a;
+            padding: 10px 12px;
+            border-radius: 5px;
+            border: 1px solid #475569;
+        }
+        .option-item input[type="radio"],
+        .option-item input[type="checkbox"] { margin-right: 12px; transform: scale(1.1); }
+        .option-item label { font-weight: 400; color: #cbd5e1; }
+        
+        /* --- Texto de Ajuda --- */
+        .help-text { font-size: 0.9rem; color: #94a3b8; font-style: italic; margin-top: -5px; margin-bottom: 10px; }
+
+        /* --- Botões de Navegação --- */
+        .navigation-buttons { display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; }
+        
+        .nav-btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        
+        .prev-btn {
+            background-color: transparent;
+            border: 1px solid #475569;
+            color: #a0aec0;
+        }
+        .prev-btn:hover { background-color: #334155; color: #e0e0e0; }
+        
+        .next-btn {
+            background-color: #38bdf8;
+            color: #121a26;
+        }
+        .next-btn:hover { background-color: #7dd3fc; transform: translateY(-2px); }
+
+        /* Classe para esconder botões */
+        .hidden {
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Levantamento de Requisitos</h1>
+        <p class="description">Novo Sistema de Gestão Integrada – LogiPeças</p>
+        
+        <div class="progress-bar-container">
+            <div class="progress-bar-inner" id="progressBar"></div>
+        </div>
+
+        <form id="multiStepForm"> 
+
+            <fieldset class="active" data-step-name="identificacao">
+                <legend id="legend-step-1">Seção 1: Identificação</legend>
+                
+                <div class="form-group">
+                    <label class="main-label" for="nome">Nome Completo</label>
+                    <input type="text" id="nome" name="nome">
+                </div>
+
+                <div class="form-group">
+                    <label class="main-label">Qual é o seu setor de atuação?</label>
+                    <div class="option-group">
+                        <div class="option-item">
+                            <input type="radio" id="setor_vendas" name="setor" value="vendas" required>
+                            <label for="setor_vendas">Vendas</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" id="setor_almoxarifado" name="setor" value="almoxarifado">
+                            <label for="setor_almoxarifado">Almoxarifado</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" id="setor_logistica" name="setor" value="logistica">
+                            <label for="setor_logistica">Gerência de Logística</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" id="setor_financeiro" name="setor" value="financeiro">
+                            <label for="setor_financeiro">Setor Financeiro</label>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            
+            <fieldset data-step-name="rotina_principal">
+                <legend id="legend-step-rotina">Seção: Rotina Principal</legend>
+                
+                <div class="form-group">
+                    <label class="main-label" for="rotina_descricao">Qual é a sua principal tarefa ou rotina diária?</label>
+                    <p class="help-text">
+                        Pense na tarefa que você mais faz ou que é mais crítica para o seu setor. 
+                        Descreva-a em passos, do início ao fim.
+                    </p>
+                    <p class="help-text" style="font-weight: 600; font-style: normal;">
+                        Exemplo (Vendedor):<br>
+                        Passo 1: Recebo o pedido por e-mail.<br>
+                        Passo 2: Verifico o estoque na planilha "Estoque_Geral.xlsx".<br>
+                        Passo 3: Lanço o pedido no sistema antigo (tela de vendas).<br>
+                        Passo 4: Aviso o financeiro por e-mail para aprovação.
+                    </p>
+                    <textarea id="rotina_descricao" name="rotina_descricao" rows="6"></textarea>
+                </div>
+            </fieldset>
+
+            <fieldset data-step-name="vendas">
+                <legend id="legend-step-vendas">Seção: Processos de Vendas</legend>
+                
+                <div class="form-group">
+                    <label class="main-label">Com base na rotina que você descreveu, qual é o maior GARGALO?</label>
+                    <p class="help-text">Ex: "A planilha de estoque nunca está atualizada", "Demora para o financeiro aprovar"</p>
+                    <input type="text" id="vendas_gargalo" name="vendas_gargalo">
+                </div>
+
+                <div class="form-group">
+                    <label class="main-label">Se um cliente ligar AGORA perguntando "Onde está meu pedido?", quão rápido você consegue essa informação?</label>
+                    <div class="option-group">
+                        <div class="option-item"><input type="radio" name="visibilidade_pedido" value="imediata"><label>Imediatamente</label></div>
+                        <div class="option-item"><input type="radio" name="visibilidade_pedido" value="minutos"><label>Em alguns minutos (checo planilhas)</label></div>
+                        <div class="option-item"><input type="radio" name="visibilidade_pedido" value="demora"><label>Demora (preciso ligar para outro setor)</label></div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset data-step-name="almoxarifado">
+                <legend id="legend-step-almoxarifado">Seção: Processos de Almoxarifado</legend>
+
+                <div class="form-group">
+                    <label class="main-label" for="almox_gargalo">Com base na rotina que você descreveu (entrada ou saída), qual é o maior GARGALO?</label>
+                    <textarea id="almox_gargalo" name="almox_gargalo" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="main-label" for="almox_erro_estoque">Qual a causa mais comum para o estoque físico (prateleira) não bater com o sistema?</label>
+                    <p class="help-text">Ex: "Baixa manual errada", "Peça sem etiqueta", "Falta de conferência na entrada"</p>
+                    <input type="text" id="almox_erro_estoque" name="almox_erro_estoque">
+                </div>
+            </fieldset>
+
+            <fieldset data-step-name="logistica">
+                <legend id="legend-step-logistica">Seção: Processos de Logística</legend>
+
+                <div class="form-group">
+                    <label class="main-label" for="log_gargalo">Na sua visão (como gerente), qual é o maior gargalo no processo (do Pedido Aprovado até a Entrega)?</label>
+                    <textarea id="log_gargalo" name="log_gargalo" rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="main-label" for="log_previsao">Qual a maior dificuldade para prever a reposição de produtos?</label>
+                    <div class="option-group">
+                        <div class="option-item"><input type="radio" name="log_previsao" value="dados"><label>Falta de dados históricos confiáveis</label></div>
+                        <div class="option-item"><input type="radio" name="log_previsao" value="sistema"><label>O sistema não ajuda, é tudo manual</label></div>
+                        <div class="option-item"><input type="radio" name="log_previsao" value="vendas"><label>Vendas não informa previsões</label></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="main-label" for="log_roteirizacao">Como é feita a roteirização (criação de rotas) das entregas hoje?</label>
+                    <input type="text" id="log_roteirizacao" name="log_roteirizacao" placeholder="Ex: Manualmente, Google Maps, ...">
+                </div>
+            </fieldset>
+
+            <fieldset data-step-name="financeiro">
+                <legend id="legend-step-financeiro">Seção: Processos Financeiros</legend>
+
+                 <div class="form-group">
+                    <label class="main-label">Com base na sua rotina (aprovação ou faturamento), qual é o maior GARGALO?</label>
+                    <div class="option-group">
+                        <div class="option-item"><input type="radio" name="fin_gargalo" value="aprovacao"><label>Demora na análise de crédito (processo manual)</label></div>
+                        <div class="option-item"><input type="radio" name="fin_gargalo" value="faturamento"><label>Não saber quando faturar (falta de aviso da entrega)</label></div>
+                        <div class="option-item"><input type="radio" name="fin_gargalo" value="conciliacao"><label>Conciliação bancária demorada</label></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="main-label" for="fin_faturamento">Quando um pedido é entregue, como você é notificado para emitir a NFe/Boleto?</label>
+                    <p class="help-text">Ex: "O canhoto da nota volta", "Logística avisa por e-mail", "Não sou avisado"</p>
+                    <textarea id="fin_faturamento" name="fin_faturamento" rows="3"></textarea>
+                </div>
+            </fieldset>
+
+            <fieldset data-step-name="expectativas">
+                <legend id="legend-step-expectativas">Seção: Expectativas</legend>
+                
+                <div class="form-group">
+                    <label class="main-label" for="info_realtime">Se você pudesse ter UMA informação em tempo real na sua tela, qual seria a mais importante?</label>
+                    <p class="help-text">Ex: "Nível de estoque atualizado", "Status de todos os pedidos em aberto"</p>
+                    <input type="text" id="info_realtime" name="info_realtime">
+                </div>
+
+                <div class="form-group">
+                    <label class="main-label" for="facilitar_trabalho">Pensando no novo sistema, o que ele PRECISA fazer para que seu trabalho seja 50% mais fácil?</label>
+                    <textarea id="facilitar_trabalho" name="facilitar_trabalho" rows="4"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="main-label" for="sugestoes">Que funcionalidades você acha que o novo sistema deveria ter?</label>
+                    <p class="help-text">Ex: "Leitor de código de barras", "Notificações automáticas", "Painel de pedidos atrasados".</p>
+                    <textarea id="sugestoes" name="sugestoes" rows="5"></textarea>
+                </div>
+            </fieldset>
+
+            <fieldset data-step-name="conclusao">
+                <legend id="legend-step-conclusao">Seção: Conclusão</legend>
+
+                <div class="form-group">
+                    <label class="main-label">O sistema precisa ser acessível de fora da empresa (ex: pelo celular)?</label>
+                    <div class="option-group">
+                        <div class="option-item"><input type="radio" name="acesso_remoto" value="sim"><label>Sim, acesso móvel/remoto é essencial.</label></div>
+                        <div class="option-item"><input type="radio" name="acesso_remoto" value="nao"><label>Não, só precisa funcionar dentro da LogiPeças.</label></div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="main-label" for="observacoes">Você tem mais alguma observação ou preocupação que não foi coberta neste formulário?</label>
+                    <textarea id="observacoes" name="observacoes" rows="4"></textarea>
+                </div>
+            </fieldset>
+
+            <div class="navigation-buttons">
+                <button type="button" id="prevBtn" class="nav-btn prev-btn hidden">← Anterior</button>
+                <button type="button" id="nextBtn" class="nav-btn next-btn">Próximo →</button>
+            </div>
+
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            
+            // --- Seleção de Elementos ---
+            const allSteps = Array.from(document.querySelectorAll("form fieldset"));
+            const nextBtn = document.getElementById("nextBtn");
+            const prevBtn = document.getElementById("prevBtn");
+            const progressBar = document.getElementById("progressBar");
+            const form = document.getElementById("multiStepForm");
+
+            // --- Variáveis de Estado ---
+            let activeSteps = []; // Armazena o "roteiro" filtrado do usuário
+            let currentStepIndex = 0; // Índice do roteiro (de 0 a 4)
+            let numSteps = 0; // Número total de etapas no roteiro
+
+            /**
+             * Mostra a etapa correta com base no índice do roteiro
+             */
+            function showStep(stepIndex) {
+                // Oculta todas as seções
+                allSteps.forEach(step => step.classList.remove('active'));
+                
+                // Mostra a seção ativa com base no roteiro
+                if (activeSteps[stepIndex]) {
+                    activeSteps[stepIndex].classList.add('active');
+                }
+                
+                // Atualiza a barra de progresso
+                const progressPercent = (stepIndex / (numSteps - 1)) * 100;
+                progressBar.style.width = `${progressPercent}%`;
+                
+                // Atualiza os botões
+                prevBtn.classList.toggle('hidden', stepIndex === 0);
+                
+                if (stepIndex === numSteps - 1) {
+                    nextBtn.textContent = 'Enviar';
+                } else {
+                    nextBtn.textContent = 'Próximo →';
+                }
+            }
+            
+            /**
+             * [MODIFICADO] Constrói o roteiro do formulário com base no cargo selecionado
+             */
+            function buildStepPath() {
+                const selectedRole = document.querySelector('input[name="setor"]:checked');
+                
+                if (!selectedRole) {
+                    alert("Por favor, selecione seu setor de atuação.");
+                    return false;
+                }
+                
+                const roleValue = selectedRole.value;
+                
+                // [MODIFICADO] Define o roteiro com 5 etapas
+                activeSteps = [
+                    document.querySelector('fieldset[data-step-name="identificacao"]'),
+                    document.querySelector('fieldset[data-step-name="rotina_principal"]'), // <-- SEÇÃO ADICIONADA
+                    document.querySelector(`fieldset[data-step-name="${roleValue}"]`),
+                    document.querySelector('fieldset[data-step-name="expectativas"]'),
+                    document.querySelector('fieldset[data-step-name="conclusao"]')
+                ];
+                
+                numSteps = activeSteps.length; // Agora é 5
+                
+                // [MODIFICADO] Atualiza os títulos das legendas para refletir o total de 5 etapas
+                activeSteps[0].querySelector('legend').textContent = `Seção 1 de ${numSteps}: Identificação`;
+                activeSteps[1].querySelector('legend').textContent = `Seção 2 de ${numSteps}: Rotina Principal`;
+                activeSteps[2].querySelector('legend').textContent = `Seção 3 de ${numSteps}: Processos (${selectedRole.labels[0].textContent})`;
+                activeSteps[3].querySelector('legend').textContent = `Seção 4 de ${numSteps}: Expectativas`;
+                activeSteps[4].querySelector('legend').textContent = `Seção 5 de ${numSteps}: Conclusão`;
+
+                return true;
+            }
+
+            // --- Event Listeners ---
+            
+            nextBtn.addEventListener("click", function() {
+                
+                // --- LÓGICA DE RAMIFICAÇÃO (Etapa 1) ---
+                if (currentStepIndex === 0) {
+                    const pathBuilt = buildStepPath(); // Constrói o roteiro
+                    if (!pathBuilt) return; // Para se o cargo não foi selecionado
+                    
+                    currentStepIndex++;
+                    showStep(currentStepIndex);
+                
+                // --- LÓGICA DE ENVIO (Última Etapa) ---
+                } else if (currentStepIndex === numSteps - 1) {
+                    // Coleta os dados
+                    const formData = new FormData(form);
+                    console.log("--- Dados do Formulário para Envio ---");
+                    for (let [key, value] of formData.entries()) {
+                        if(value) { // Mostra apenas os campos preenchidos
+                            console.log(`${key}: ${value}`);
+                        }
+                    }
+                    alert("Formulário Enviado! (Verifique o console para os dados)");
+                    // form.submit(); // Descomente para envio real
+                
+                // --- LÓGICA DE AVANÇO (Etapas Intermediárias) ---
+                } else {
+                    currentStepIndex++;
+                    showStep(currentStepIndex);
+                }
+            });
+
+            prevBtn.addEventListener("click", function() {
+                if (currentStepIndex > 0) {
+                    currentStepIndex--;
+                    showStep(currentStepIndex);
+                }
+            });
+
+            // Inicializa o formulário
+            // Mostra apenas a primeira etapa (índice 0) do roteiro inicial (que só tem a 1ª seção)
+            activeSteps = [allSteps[0]];
+            numSteps = activeSteps.length;
+            showStep(currentStepIndex);
+        });
+    </script>
+
+</body>
+</html>
